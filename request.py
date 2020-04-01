@@ -1,13 +1,17 @@
 import requests
 import json
 
+print('*****Astronomy Picture Of The Day******')
 
-def jPrint(obj):
-    #create a formatted string of the python json object 
-    text = json.dumps(obj, sort_keys=True, indent=4)
-    print(text)
+#API REQUEST 
+url = 'https://api.nasa.gov/planetary/apod'
+key = 'VyX9fdgowmpkxXikiRM9OUJD69cgQKdfjIrEh3kP'
+param = {'api_key': key}
+resp = requests.get(url, params=param).json()
 
-#PRUEBA PARA SABER SI ESTA CONECTANDO CON EL SERVIDOR 
-response = requests.get('https://api.nasa.gov/planetary/apod?api_key=VyX9fdgowmpkxXikiRM9OUJD69cgQKdfjIrEh3kP&date=1995-07-16')
-#print(json.dumps(response, indent=4))
-jPrint(response.json())
+#INFORMACION OBTENIDA
+print(resp["title"])
+print(resp["date"])
+print(resp["explanation"])
+print(resp['media_type'])
+print(resp['hdurl'])
