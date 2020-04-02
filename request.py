@@ -5,7 +5,7 @@ print('*****Astronomy Picture Of The Day******')
 
 #API REQUEST 
 url = 'https://api.nasa.gov/planetary/apod'
-key = 'VyX9fdgowmpkxXikiRM9OUJD69cgQKdfjIrEh3kP'
+key = '?api_key=DEMO_KEY'
 param = {'api_key': key}
 resp = requests.get(url, params=param).json()
 
