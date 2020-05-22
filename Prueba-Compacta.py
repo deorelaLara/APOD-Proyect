@@ -1,32 +1,37 @@
 from abc import ABC, abstractclassmethod
 import requests
+import json
 
+#CLASE PHOTO OBJETO
 class APOD():
-    def __init__(self, **args):
-        self.Date = args.get('date')
-        self.Description = args.get('description')
-        self.hdUrl = args.get('hdUrl')
-        self.Title = args.get('title')
+    def __init__(self, title):
+        self.Title = title
         
+#INTERFAZ API
 class BiblioAPOD(ABC):
     @abstractclassmethod
-    def Search(date):
+    def SearchPicture(date):
         pass
 
-def getAPOD(date, bibliotec):
-    apod = bibliotec.Search(date)
+def getPicture(date, bibliotec):
+    apod = bibliotec.SearchPicture(date)
     return apod.Title
 
+#IMPLEMENTACION
 class Nasa(BiblioAPOD):
     def __init__(self, url_base):
         self.url = url_base
+
+    def SearchPicture(self, date):
+        res = requests.get('{}&date={}'.format(self.url, date))
+        data = res.json()
+        return APOD(data['title'])
+
         
-    def Search(self, date=''):
-        res = requests.get('{}/{}'.format(self.url, date))
-        json = res.json()
-        return APOD(json['date'])
     
     
 if __name__ == '__main__':
-    biblio = Nasa('https://api.nasa.gov/planetary/apod') #URL para hacer el request
-    print(getAPOD('2020-03-16', biblio))
+    date = input('Insert Date:')
+    #https://api.nasa.gov/planetary/apod?api_key=VyX9fdgowmpkxXikiRM9OUJD69cgQKdfjIrEh3kP&date=2020-04-04
+    biblio = Nasa('https://api.nasa.gov/planetary/apod?api_key=VyX9fdgowmpkxXikiRM9OUJD69cgQKdfjIrEh3kP') #URL para hacer el request
+    print(getPicture(date, biblio))
