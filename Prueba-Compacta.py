@@ -4,8 +4,12 @@ import json
 
 #CLASE PHOTO OBJETO
 class APOD():
-    def __init__(self, title):
+    def __init__(self, title, hdurl, explanation, date, media_type):
         self.Title = title
+        self.Hdurl= hdurl
+        self.Explanation = explanation
+        self.Date = date
+        self.Media_type = media_type
         
 #INTERFAZ API
 class BiblioAPOD(ABC):
@@ -15,7 +19,7 @@ class BiblioAPOD(ABC):
 
 def getPicture(date, bibliotec):
     apod = bibliotec.SearchPicture(date)
-    return apod.Title
+    return apod.Title, apod.Hdurl ,apod.Explanation, apod.Date, apod.Media_type
 
 #IMPLEMENTACION
 class Nasa(BiblioAPOD):
@@ -25,9 +29,7 @@ class Nasa(BiblioAPOD):
     def SearchPicture(self, date):
         res = requests.get('{}&date={}'.format(self.url, date))
         data = res.json()
-        return APOD(data['title'])
-
-        
+        return APOD(data['date'] ,data['title'], data['explanation'], data['hdurl'], data['media_type'])
     
     
 if __name__ == '__main__':
