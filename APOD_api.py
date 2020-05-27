@@ -19,7 +19,10 @@ def getPicture(date, bibliotec):
         'url' : apod.url,
         'media-type' : apod.media_type
     }
-    return params
+    #info =[]
+    #info.append(params)
+    return apod.date, apod.title, apod.explanation, apod.url, apod.media_type
+    #return apod.date, apod.title, apod.explanation, apod.url, apod.media_type
 
 class Nasa(BiblioAPOD):
     def __init__(self, url_base):
@@ -37,25 +40,18 @@ class Nasa(BiblioAPOD):
 
 class DBServices(DBService):
 
-
-
     #Insertar datos desde API a DB
-    def savePhoto(self, Photo):
+    def savePhoto(self, photo):
         #Conexion a la DB
         conn = sqlite3.connect('APOD.db')
         cursor = conn.cursor()
-        print('Conectado')
+        print('----------------------------------------------------------------------------------')
+        print('Conectado!')
         try:
-            querito = f"""
-                INSERT INTO photo (date, title, explanation, url, media_type)
-                VALUES ('{Photo['date']}', '{Photo['title']}', '{Photo['explanation']}', '{Photo['url']}', '{Photo['media_type']}')
-                """
-
-            #queryto = '''INSERT INTO photo VALUES
-            #           ('{}', '{}', '{}', '{}', '{}')'''.format(Photo.date, Photo.title, Photo.explanation, Photo.url, Photo.media_type)
-            resultado = cursor.execute(querito)
+            cursor.execute("INSERT INTO photo(date, title, explanation, hdurl, mediaType) VALUES (?,?,?,?,?)",(photo[0],photo[1],photo[2],photo[3],photo[4]))
             conn.commit()
-            print('Inf insertada con exito', resultado)
+            print('----------------------------------------------------------------------------------')
+            print('Foto insertada con exito!')
             cursor.close()
 
         except sqlite3.Error as error:
@@ -65,15 +61,13 @@ class DBServices(DBService):
                 conn.close()
 
 
-
 if __name__== '__main__':
-    
     date = input('Insert date:')
     biblio = Nasa('https://api.nasa.gov/planetary/apod?api_key=VyX9fdgowmpkxXikiRM9OUJD69cgQKdfjIrEh3kP') #URL para hacer el request
-    picture = getPicture(date, biblio)
-    print(picture)
-    print('---------------------------------------------------------------------------------------------')
-    #insert = picture['DATE'], picture['TITLE']
-    #test = DBServices()
-    #test.savePhoto(getPicture(date, biblio))
+    picture =getPicture(date, biblio)
+    #print(picture)
+
+    test = DBServices()
+    test.savePhoto(picture)
+
 
