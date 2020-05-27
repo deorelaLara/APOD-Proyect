@@ -6,16 +6,15 @@ class DBService(ABC):
     @abstractclassmethod
     def savePhoto(self):
         pass
-    '''
-    #delete
+    #Delete
     @abstractclassmethod
     def deletePhoto(self):
         pass
-    #select
+    #Select all photos on data base
     @abstractclassmethod
-    def getPhotoFromDB(self):
-        pass'''
-    '''
+    def getPhoto(self):
+        pass
+    #Select photo by date 
     @abstractclassmethod
-    def searchPic(self):
-        pass'''
+    def getPhotobyDate(self):
+        pass
