@@ -1,4 +1,4 @@
-  import requests
+import requests
 import json
 from Photo import *
 from APOD_Abs import *
@@ -35,45 +35,45 @@ class Nasa(BiblioAPOD):
 ################## IMPLEMENTACION INTERFAZ DB ###############################
 #############################################################################
 
-class DBServices():
+class DBServices(DBService):
+
+
+
     #Insertar datos desde API a DB
-    def savePhoto(self, photo):
+    def savePhoto(self, Photo):
         #Conexion a la DB
         conn = sqlite3.connect('APOD.db')
         cursor = conn.cursor()
         print('Conectado')
-        #Verificamos que la photo no exista en la base de datos
-        cursor.execute('''SELECT date from photo WHERE date = "{}"'''.format(photo.date))
-        #Guardamos el resultado de la consulta anterior en la variable count, puede contener una photo o None
-        count = cursor.fetchone()
+        try:
+            querito = f"""
+                INSERT INTO photo (date, title, explanation, url, media_type)
+                VALUES ('{Photo['date']}', '{Photo['title']}', '{Photo['explanation']}', '{Photo['url']}', '{Photo['media_type']}')
+                """
 
-        if count is None:
-            #Si el parametro es None se inserta la photo 
-            param = {
-                'DATE' : photo.date,
-                'TITLE' : photo.title,
-                'EXPLANATION' : photo.explanation,
-                'URL' : photo.url,
-                'MEDIA_TYPE': photo.media_type
-            }
+            #queryto = '''INSERT INTO photo VALUES
+            #           ('{}', '{}', '{}', '{}', '{}')'''.format(Photo.date, Photo.title, Photo.explanation, Photo.url, Photo.media_type)
+            resultado = cursor.execute(querito)
+            conn.commit()
+            print('Inf insertada con exito', resultado)
+            cursor.close()
 
-            try:
-                cursor.execute("INSERT INTO photo(id, date, title, explanation, hdurl, media_type)VALUES(null, :DATE, :TITLE, :EXPLANATION, :URL, :MEDIA_TYPE);", param)
-                conn.commit()
-                print('Photo {} insertada con exito'.format(photo.date))
-                cursor.close()
+        except sqlite3.Error as error:
+            print('Error --->', error)
+        finally:
+            if(conn):
+                conn.close()
 
-            except sqlite3.Error as error:
-                print('Error en la conexion:', error)
 
 
 if __name__== '__main__':
+    
     date = input('Insert date:')
     biblio = Nasa('https://api.nasa.gov/planetary/apod?api_key=VyX9fdgowmpkxXikiRM9OUJD69cgQKdfjIrEh3kP') #URL para hacer el request
-    picture =getPicture(date, biblio)
+    picture = getPicture(date, biblio)
     print(picture)
+    print('---------------------------------------------------------------------------------------------')
     #insert = picture['DATE'], picture['TITLE']
     #test = DBServices()
-    #test.savePhoto(picture)
-
+    #test.savePhoto(getPicture(date, biblio))
 
