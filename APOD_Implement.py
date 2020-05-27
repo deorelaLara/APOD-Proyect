@@ -21,7 +21,7 @@ def getPicture(date, bibliotec):
     }
     #info =[]
     #info.append(params)
-    return apod.date, apod.title, apod.explanation, apod.url, apod.media_type
+    return params
     #return apod.date, apod.title, apod.explanation, apod.url, apod.media_type
 
 class Nasa(BiblioAPOD):
@@ -48,7 +48,8 @@ class DBServices(DBService):
         print('----------------------------------------------------------------------------------')
         print('Connected!')
         try:
-            cursor.execute("INSERT INTO photo(date, title, explanation, hdurl, mediaType) VALUES (?,?,?,?,?)",(photo[0],photo[1],photo[2],photo[3],photo[4]))
+            cursor.execute("INSERT INTO photo(date, title, explanation, hdurl, mediaType) VALUES (?,?,?,?,?)",(photo['date'],photo['title'],photo['explanation'],photo['url'],photo['media-type']))
+            #cursor.execute("INSERT INTO photo(date, title, explanation, hdurl, mediaType) VALUES (?,?,?,?,?)",(photo[0],photo[1],photo[2],photo[3],photo[4]))
             conn.commit()
             print('----------------------------------------------------------------------------------')
             print('Foto insertada con exito!')
@@ -134,14 +135,14 @@ if __name__== '__main__':
         Probando funciones de interfaz api
     '''
     #date = input('Insert date:')
-    #biblio = Nasa('https://api.nasa.gov/planetary/apod?api_key=VyX9fdgowmpkxXikiRM9OUJD69cgQKdfjIrEh3kP') #URL para hacer el request
+    biblio = Nasa('https://api.nasa.gov/planetary/apod?api_key=VyX9fdgowmpkxXikiRM9OUJD69cgQKdfjIrEh3kP') #URL para hacer el request
     #picture =getPicture(date, biblio)
     #print(picture)
-
+    print(getPicture('2020-01-01', biblio))
     '''
         Probando funciones de interfaz DB
     '''
-    test = DBServices()
+    #test = DBServices()
     #test.savePhoto(picture)
     #test.getPhoto()
     #test.getPhotobyDate()
