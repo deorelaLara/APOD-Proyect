@@ -9,4 +9,4 @@ install:
     - pip install requests
 
 script:
-    - python APOD_Implement.py.py
+    - python APOD_Implement.py
