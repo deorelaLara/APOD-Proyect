@@ -4,9 +4,9 @@ python:
 
 matrix:
     include:
-        -python:3.8.2
+        - python:3.8.2
 install:
-    -pip install requests
+    - pip install requests
 
 script:
-    -python APOD_Implement.py
+    - python APOD_Implement.py.py
