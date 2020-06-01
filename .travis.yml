@@ -10,3 +10,6 @@ install:
 
 script:
     - python APOD_Implement.py
+    - python Photo.py
+    - python DB_Abs.py
+    - python APOD_Abs.py
