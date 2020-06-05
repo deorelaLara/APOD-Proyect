@@ -19,8 +19,8 @@ def getPicture(date, bibliotec):
         'url' : apod.url,
         'media-type' : apod.media_type
     }
-    #info =[]
-    #info.append(params)
+    info =[]
+    info.append(params)
     return params
     #return apod.date, apod.title, apod.explanation, apod.url, apod.media_type
 
@@ -128,17 +128,64 @@ class DBServices(DBService):
             if(conn):
                 conn.close()
 
+##############################################################################
+############################ MAIN ###########################################
+#############################################################################
+def seleccion():
+    correcto = False
+    num = 0
+    while(not correcto):
+        try:
+            num = int(input('Introduce opcion: '))
+            correcto = True
+        except ValueError:
+            print('Opcion invalida')
+    return num
+
+def menu():
+    test = DBServices()
+    os.system('cls')
+    exit = False
+    op = 0
+    while not exit:
+        print('\n'+' ------ Astronomy Picture of the Day ------'+'\n')
+        print('Selecciona una opcion')
+        print('\t1 - Insertar fotografia en BD')
+        print('\t2 - Mostrar lista de fotografias en BD')
+        print('\t3 - Eliminar fotografia almacenada en BD')
+        print('\t4 - Buscar fotografia por fecha')
+        print('\t5 - Salir')
+
+        op = seleccion()
+        if op == 1:
+            date = input('Insert date:')
+            biblio = Nasa('https://api.nasa.gov/planetary/apod?api_key=VyX9fdgowmpkxXikiRM9OUJD69cgQKdfjIrEh3kP') #URL para hacer el request
+            picture = getPicture(date, biblio)
+            print(picture)
+            #print(getPicture(picture, biblio))
+            test.savePhoto(picture)
+        elif op == 2:
+            test.getPhoto()
+        elif op == 3:
+            test.deletePhoto()
+        elif op == 4:
+            test.getPhotobyDate()
+        else:
+            print('Opcion Invalida')
+
 
 if __name__== '__main__':
+    #print('ok')
+    menu()
     
     '''
         Probando funciones de interfaz api
     '''
     #date = input('Insert date:')
-    biblio = Nasa('https://api.nasa.gov/planetary/apod?api_key=VyX9fdgowmpkxXikiRM9OUJD69cgQKdfjIrEh3kP') #URL para hacer el request
+    #biblio = Nasa('https://api.nasa.gov/planetary/apod?api_key=VyX9fdgowmpkxXikiRM9OUJD69cgQKdfjIrEh3kP') #URL para hacer el request
     #picture =getPicture(date, biblio)
     #print(picture)
-    print(getPicture('2020-01-01', biblio))
+    #print(getPicture(picture, biblio))
     '''
         Probando funciones de interfaz DB
     '''
@@ -147,5 +194,6 @@ if __name__== '__main__':
     #test.getPhoto()
     #test.getPhotobyDate()
     #test.deletePhoto()
+
 
 
