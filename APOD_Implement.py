@@ -232,7 +232,7 @@ def menu():
 
 if __name__== '__main__':
     print('ok')
-    menu()
+    #menu()
     
     '''
         Probando funciones de interfaz api
