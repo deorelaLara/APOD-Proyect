@@ -13,7 +13,7 @@ def main():
 				id INTEGER PRIMARY KEY AUTOINCREMENT,
 				date TEXT(50),
 				title VARCHAR(200),
-				explanation VARCHAR(350),
+				explanation VARCHAR(3000),
                 hdurl VARCHAR(200),
 				mediaType VARCHAR(350)
 			);
@@ -27,4 +27,4 @@ def main():
 
 if __name__ == '__main__':
 	print(':lol:')
-	#main()
+	main()

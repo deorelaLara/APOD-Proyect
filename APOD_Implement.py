@@ -10,28 +10,79 @@ import os
 ################## IMPLEMENTACION INTERFAZ API ##############################
 #############################################################################
 
-def getPicture(date, bibliotec):
-    apod = bibliotec.SearchPicture(date)
-    params = {
-        'date' : apod.date,
-        'title' : apod.title,
-        'explanation' : apod.explanation,
-        'url' : apod.url,
-        'media-type' : apod.media_type
-    }
-    info =[]
-    info.append(params)
-    return params
+def getPicture(bibliotec):#devuelve de json a Photo
+
+
+    keys=['date','title','explanation','url','media_type']
+    rules=[[keys[0],10,],[keys[1],200],[keys[2],3000],[keys[3],200],[keys[4],350]]
+    print("DBG: ",len(bibliotec))
+    print("DBG: ",bibliotec.keys())
+
+    if (not isinstance(bibliotec,dict)):
+        print(" [-] Error, bibliotec not is dict ")   
+        return 1
+    if(len(bibliotec)!=5):
+        print(" [-] Error, bibliotec len != 5 ")   
+        return 1
+    for k,v in bibliotec.items():
+        if( k not in keys):
+            print(" [-] Error ",v," is not in keys")
+            return 1
+        if (not isinstance(v,str)):
+            print(" [-] Error in ",k, " : ", v)
+            return 1
+        if k==keys[0] and len(v)!=rules[0][1]:
+            print(" [-] Error in ",k, " : ", v)
+            return 1
+        if k==keys[1] and len(v)>rules[1][1]:
+            print(" [-] Error in ",k , " : ", v)
+            return 1
+        if k==keys[2] and len(v)>rules[2][1]:
+            print(" [-] Error in ",k," ", len(v))
+            print(v)
+            return 1
+        if k==keys[3] and (len(v)>rules[3][1] or len(v)<10):
+            print(" [-] Error in ",k, " : ", v)
+            return 1
+        if k==keys[4] and (len(v)>rules[4][1] or v!='image'):
+            print(" [-] Error in ",k, " : ", v)
+            return 1
+
+    photo = Photo(bibliotec['date'], bibliotec['title'], bibliotec['explanation'], bibliotec['url'], bibliotec['media_type'])    
+
+    return photo
     #return apod.date, apod.title, apod.explanation, apod.url, apod.media_type
 
 class Nasa(BiblioAPOD):
     def __init__(self, url_base):
+
         self.url = url_base
     
+
     def SearchPicture(self, date):
-        res = requests.get('{}&date={}'.format(self.url, date))
-        data = res.json()
-        return Photo(data['date'] ,data['title'], data['explanation'], data['url'], data['media_type'])
+
+        keys=['date','title','explanation','url','media_type']
+
+        if (not isinstance(date, str)) or date==(" " or "")  or date==None or len(date)==0  or len(date)!=10 :
+            print(" [-] Error en datatype, len or is null [if]", date)
+            return 1
+        for x in date:
+            if not (x.isnumeric() or x=='-'):
+                print(" [-] Error en id tiene caracteres especiales")
+                return 1
+        try:
+            res = requests.get('{}&date={}'.format(self.url, date))
+            print("\treq >>>>",'{}&date={}'.format(self.url, date))
+            status=res.status_code
+            data = res.json()
+            print("status >>>>>>> ",status)
+            if(status!=200):
+                print(" [-] Error en request",res.status_code)
+                return 1
+            myres={k:v for (k,v) in data.items() if k in keys }
+            return (dict(myres))
+        except:
+            return 1
 
 
 ##############################################################################
@@ -42,13 +93,15 @@ class DBServices(DBService):
 
     #Insertar datos desde API a DB
     def savePhoto(self, photo):
+
+
         #Conexion a la DB
         conn = sqlite3.connect('APOD.db')
         cursor = conn.cursor()
         print('----------------------------------------------------------------------------------')
         print('Connected!')
         try:
-            cursor.execute("INSERT INTO photo(date, title, explanation, hdurl, mediaType) VALUES (?,?,?,?,?)",(photo['date'],photo['title'],photo['explanation'],photo['url'],photo['media-type']))
+            cursor.execute("INSERT INTO photo(date, title, explanation, hdurl, mediaType) VALUES (?,?,?,?,?)",(photo.date,photo.title,photo.explanation,photo.url,photo.media_type))
             #cursor.execute("INSERT INTO photo(date, title, explanation, hdurl, mediaType) VALUES (?,?,?,?,?)",(photo[0],photo[1],photo[2],photo[3],photo[4]))
             conn.commit()
             print('----------------------------------------------------------------------------------')
@@ -160,7 +213,7 @@ def menu():
         if op == 1:
             date = input('Insert date:')
             biblio = Nasa('https://api.nasa.gov/planetary/apod?api_key=VyX9fdgowmpkxXikiRM9OUJD69cgQKdfjIrEh3kP') #URL para hacer el request
-            picture = getPicture(date, biblio)
+            picture = getPicture(biblio.SearchPicture(date))
             print(picture)
             #print(getPicture(picture, biblio))
             test.savePhoto(picture)
@@ -175,16 +228,20 @@ def menu():
 
 
 if __name__== '__main__':
-    #print('ok')
+    print('ok')
     menu()
     
     '''
         Probando funciones de interfaz api
     '''
-    #date = input('Insert date:')
-    #biblio = Nasa('https://api.nasa.gov/planetary/apod?api_key=VyX9fdgowmpkxXikiRM9OUJD69cgQKdfjIrEh3kP') #URL para hacer el request
-    #picture =getPicture(date, biblio)
-    #print(picture)
+    # date = input('Insert date:')
+    #date = "2020-05-10"##formato
+    # biblio = Nasa('https://api.nasa.gov/planetary/apod?api_key=VyX9fdgowmpkxXikiRM9OUJD69cgQKdfjIrEh3kP') #URL para hacer el request
+    #print(biblio)
+    #print("*"*30)
+    # b=biblio.SearchPicture(date)
+    # picture =getPicture(date, biblio)
+    #print(b)
     #print(getPicture(picture, biblio))
     '''
         Probando funciones de interfaz DB
@@ -194,6 +251,3 @@ if __name__== '__main__':
     #test.getPhoto()
     #test.getPhotobyDate()
     #test.deletePhoto()
-
-
-
