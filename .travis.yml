@@ -13,3 +13,4 @@ script:
     - python Photo.py
     - python DB_Abs.py
     - python APOD_Abs.py
+    - python APIReq_Test.py	
