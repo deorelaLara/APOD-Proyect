@@ -223,8 +223,11 @@ def menu():
             test.deletePhoto()
         elif op == 4:
             test.getPhotobyDate()
+        elif op == 5:
+            break
         else:
             print('Opcion Invalida')
+            
 
 
 if __name__== '__main__':
